@@ -77,19 +77,15 @@ def read_articles(articles):
     return all_content, all_links
 
 
-def read_content_file(fname, fields):
+def read_content_file(fname):
     content = []
 
     try:
         csv.field_size_limit(1000000)
-        with open(fname, 'r', newline='') as csvfile:
-            reader = csv.DictReader(csvfile)
+        with open(fname, 'r', newline='', encoding='utf-8') as csvfile:
+            reader = csv.reader(csvfile)
             for row in reader:
-                values = tuple(row[f] for f in fields)
-                if len(values) > 1:
-                    content.append(values)
-                else: # only one field requested
-                    content.append(values[0])
+                content.append(row)
     except FileNotFoundError:
         pass
 
@@ -105,16 +101,16 @@ def write_content_file(fname, content):
         nextid = 0
     fname = "{}-{}.csv".format(fname, nextid)
 
-    with open(fname, 'w', newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=['Title', 'Text'])
-        writer.writeheader()
+    with open(fname, 'w', newline='', encoding='utf-8') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(('Title', 'Text'))
         for c in content:
-            writer.writerow({'Title': c[0].encode(), 'Text': c[1].encode()})
+            writer.writerow(item.replace('\n', '\\n') for item in c)
 
 
 def read_title_file(fname):
     try:
-        with open(fname, "r", encoding='utf-8') as infile:
+        with open(fname, 'r', encoding='utf-8') as infile:
             titles = set([line.strip() for line in infile.readlines()])
     except FileNotFoundError:
         titles = set()
