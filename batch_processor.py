@@ -1,5 +1,4 @@
 import copy
-from tqdm import tqdm
 
 
 class BatchProcessor:
@@ -11,8 +10,8 @@ class BatchProcessor:
 
     def batch_call_api(self, conn, titles):
         articles = []
-        for title in tqdm(titles):
-            print("\n{}...".format(title))
+        for i, title in enumerate(titles, start=1):
+            print("{}/{}: {}...".format(i, len(titles), title))
             text = conn.request_text(title)
             articles.append((title, text))
         return articles
@@ -21,12 +20,17 @@ class BatchProcessor:
     def read_articles(self, reader, articles):
         all_content = []
         all_links = set()
+
         for title, text in articles:
+            # Empty text: article doesn't exist
+            if not text.strip(): continue
+
             content, links = reader.read(title, text)
             if content:
                 all_content.append(content)
             if links:
                 all_links |= links
+
         return all_content, all_links
 
 

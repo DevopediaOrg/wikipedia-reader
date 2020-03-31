@@ -34,7 +34,7 @@ if len(curr_titles) == 0:
 # Process a batch, use links from the batch in next batch, ...
 all_content = []
 while len(curr_titles) > 0 and len(all_content) < cfg['max_pages']:
-    print("\nProcessing batch of {} article titles...".format(len(curr_titles)))
+    print("Processing batch of {} article titles...".format(len(curr_titles)))
 
     bproc = BatchProcessor()
     articles = bproc.batch_call_api(ApiConnector(), curr_titles)

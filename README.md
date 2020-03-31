@@ -4,11 +4,16 @@ Use Wikipedia API to read content from Wikipedia. Rather than call the API direc
 Not all titles are relevant to our work. For example, we may interested in only tech-related articles. Thus, the seed articles should be formed as such. In addition, we filter out titles that are not irrelevant. To aid this process, we use a list of common English words. We may use [Mieliestronk's 58K wordlist](http://www.mieliestronk.com/wordlist.html) for this purpose. These are save in `data/words.txt`.
 
 
-# Usage
-Before invoking the script, you may wish to check or alter values in the configuration file `config.json`. You can also modify the seed list in `data/seed_titles.txt`. You can need to download a spaCy model:
+# Installation
+Run the following to install the pre-requisites:
 ```
+pip install -r requirements.txt
 python -m spacy download en_core_web_sm
 ```
+
+
+# Usage
+Before invoking the script, you may wish to check or alter values in the configuration file `config.json`. You can also modify the seed list in `data/seed_titles.txt`.
 
 File `main.py` is the entry point. Here are some useful commands:
 * `main.py`: start with seed files
@@ -16,3 +21,5 @@ File `main.py` is the entry point. Here are some useful commands:
 * `main.py -h`: show help
 
 Output files are stored in folder `data/`.
+
+To crawl continuously (Ctrl-C to terminate), call this batch run: `sh runner.sh`

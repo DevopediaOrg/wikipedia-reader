@@ -56,7 +56,7 @@ class ArticleFilter:
         redirects_dst = set()
 
         for (title, text) in content:
-            m = re.search(r'^#REDIRECT\s+\[\[(.*)\]\]', text)
+            m = re.search(r'^\s*#REDIRECT\s*\[\[(.*)\]\]', text, flags=re.IGNORECASE)
             if m:
                 redirects_src.add(title)
                 redirects_dst.add(m.group(1))

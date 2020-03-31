@@ -4,7 +4,6 @@
 
 import argparse
 import json
-from tqdm import tqdm
 
 
 def parse_args():
