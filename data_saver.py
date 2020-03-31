@@ -1,5 +1,7 @@
+import bz2
 import csv
 from glob import glob
+import os
 import os.path
 import re
 
@@ -29,18 +31,25 @@ class ArticleSaver:
     @classmethod
     def write_content_file(cls, fname, content):
         # Derive the next filename suffix
-        acfiles = glob(fname + '*')
+        acfiles = glob(fname + '*.csv')
         if acfiles:
             nextid = 1 + max(int(re.sub(r'.*-(\d+)\.csv$', r'\1', os.path.basename(f))) for f in acfiles)
         else:
             nextid = 0
         fname = "{}-{}.csv".format(fname, nextid)
 
-        with open(fname, 'w', newline='', encoding='utf-8') as csvfile:
+        # Save csv and bz2 
+        with open(fname, 'w+', newline='', encoding='utf-8') as csvfile, \
+             bz2.open(fname + '.bz2', 'wb') as bzfile:
+            # Save to csv
             writer = csv.writer(csvfile)
             writer.writerow(('Title', 'Text'))
             for c in content:
                 writer.writerow(item.replace('\n', '\\n') for item in c)
+
+            # Read from csv and save to bz2
+            csvfile.seek(os.SEEK_SET)
+            bzfile.write(csvfile.read().encode('utf-8'))
 
 
 class TitleSaver:
