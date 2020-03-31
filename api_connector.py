@@ -1,5 +1,6 @@
 import mwclient
 
+
 class ApiConnector:
     ''' Call an API to request an article. 
     '''

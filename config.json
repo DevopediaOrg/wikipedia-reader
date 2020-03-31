@@ -1,0 +1,15 @@
+{
+    "max_pages" : 100,
+    "use_cache" : false,
+    "article" : {
+        "includes" : ["Category"]
+    },
+    "files" : {
+        "seed_titles": "data/seed_titles.txt",
+        "crawled_titles": "data/crawled_titles.txt",
+        "discarded_titles": "data/discarded_titles.txt",
+        "redirected_titles": "data/redirected_titles.txt",
+        "pending_titles": "data/pending_titles.txt",
+        "article_content_prefix": "data/ac"
+    }
+}
