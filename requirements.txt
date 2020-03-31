@@ -1,2 +1,4 @@
 mwclient==0.10.0
+pyenchant==3.0.1
+--no-binary spacy==2.2.4
 tqdm==4.44.1

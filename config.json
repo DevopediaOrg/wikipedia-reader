@@ -1,8 +1,9 @@
 {
-    "max_pages" : 100,
+    "max_pages" : 10,
     "use_cache" : false,
-    "article" : {
-        "includes" : ["Category"]
+    "filter" : {
+        "includes" : ["Category"],
+        "common_word_file" : "data/words.txt"
     },
     "files" : {
         "seed_titles": "data/seed_titles.txt",

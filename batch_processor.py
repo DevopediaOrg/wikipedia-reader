@@ -15,7 +15,6 @@ class BatchProcessor:
             print("\n{}...".format(title))
             text = conn.request_text(title)
             articles.append((title, text))
-
         return articles
 
 
@@ -28,7 +27,6 @@ class BatchProcessor:
                 all_content.append(content)
             if links:
                 all_links |= links
-
         return all_content, all_links
 
 
