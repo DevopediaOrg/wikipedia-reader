@@ -16,7 +16,7 @@ python -m spacy download en_core_web_sm
 Before invoking the script, you may wish to check or alter values in the configuration file `config.json`. You can also modify the seed list in `data/seed_titles.txt`.
 
 File `main.py` is the entry point. Here are some useful commands:
-* `main.py`: start with seed files
+* `main.py`: start with seed titles
 * `main.py -p`: start with pending titles identified from earlier crawls
 * `main.py -h`: show help
 

@@ -1,16 +1,16 @@
 {
-    "max_pages" : 100,
+    "max_pages" : 3,
     "use_cache" : false,
     "filter" : {
         "includes" : ["Category"],
         "common_word_file" : "data/words.txt"
     },
+    "seed": "data/seed_titles.txt",
     "files" : {
-        "seed_titles": "data/seed_titles.txt",
-        "crawled_titles": "data/crawled_titles.txt",
-        "discarded_titles": "data/discarded_titles.txt",
-        "redirected_titles": "data/redirected_titles.txt",
-        "pending_titles": "data/pending_titles.txt",
-        "article_content_prefix": "data/ac"
+        "crawled": "crawled_titles.txt",
+        "discarded": "discarded_titles.txt",
+        "redirected": "redirected_titles.txt",
+        "pending": "pending_titles.txt",
+        "article_content_prefix": "ac"
     }
 }
