@@ -58,8 +58,12 @@ class ArticleFilter:
         for article in articles:
             if 'redirects' in article and article['redirects']:
                 for rdt in article['redirects']:
-                    redirects_src.add(rdt['from'])
-                    redirects_dst.add(rdt['to'])
+                    if 'from' in rdt:
+                        redirects_src.add(rdt['from'])
+                        redirects_dst.add(rdt['to'])
+                    elif 'title' in rdt:
+                        redirects_src.add(rdt['title'])
+                        redirects_dst.add(article['title'])
                 oks.append(article)
             else:
                 m = re.search(r'^\s*#REDIRECT\s*\[\[(.*)\]\]', article['text'], flags=re.IGNORECASE)

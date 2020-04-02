@@ -1,17 +1,52 @@
 from datetime import datetime, timedelta
 import json
+import sys
 import mwclient
 
 
 class ApiConnector:
-    ''' Call an API to request an article. 
+    ''' Call an API to request an article.
     '''
 
-    def __init__(self, endpoint='en.wikipedia.org'):
-        self.endpoint = endpoint
-        self.site = mwclient.Site('en.wikipedia.org')
+    def __init__(self, **kwargs):
+        self.config = kwargs
+        if 'endpoint' not in self.config or not self.config['endpoint']:
+            sys.exit("ERR: API endpoint is missing in configuration. Quitting...")
+
+        # Put defaults for some missing configurations
+        if 'parse' not in self.config or not self.config['parse']:
+            self.config['parse'] = 'categories|displaytitle|links|revid|sections|templates|text|wikitext'
+        if 'query' not in self.config or not self.config['query']:
+            self.config['query'] = {
+                'categories': {
+                    'clprop': 'timestamp',
+                    'cllimit': 100
+                },
+                'extracts': { # excludes transcluded content
+                    'explaintext': 1,
+                    'exsectionformat' : 'wiki'
+                },
+                'info': {
+                    'inprop': 'displaytitle|varianttitles'
+                },
+                'pageviews': {},
+                'redirects': {
+                    'rdprop': 'title',
+                    'rdlimit': 500
+                },
+                'revisions': {}, # can't configure for multiple titles
+                'templates': {
+                    'tllimit': 500
+                },
+                'transcludedin': {
+                    'tiprop': 'title|redirect',
+                    'tilimit': 500
+                }
+            }
+
+        self.site = mwclient.Site(self.config['endpoint'])
         self.start_date = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d')+'T00:00:00Z'
-                
+
     def get_text(self, title):
         ''' Give an article title, return the full text in Wikitext format.
         The text contains unexpanded transcluded content.
@@ -20,7 +55,7 @@ class ApiConnector:
         content = self.site.pages[title]
 
         # Wikitext format: mwclient uses action=query?prop=revisions&rvprop=content|timestamp&rvlimit=1
-        text = content.text() 
+        text = content.text()
 
         # These will each make a separate API call: not ideal way to use mwclient
         # content.categories(), content.embeddedin(), content.links(),
@@ -39,8 +74,7 @@ class ApiConnector:
         This method makes a single API call.
         '''
         try:
-            props = 'categories|displaytitle|links|revid|sections|templates|text|wikitext'
-            content = self.site.get('parse', page=title, prop=props, redirects=1)
+            content = self.site.get('parse', page=title, prop=self.config['parse'], redirects=1)
             if 'warnings' in content:
                 print("WARN: Some warnings in the API response: {}".format(content['warnings']))
         except mwclient.errors.APIError:
@@ -57,46 +91,19 @@ class ApiConnector:
 
         return content['parse']
 
-    def get_text_and_info(self, titles):
-        ''' Given one or more article titles, return full text in Wikitext format.
+    def get_info(self, titles):
+        ''' Given one or more article titles, return essential information.
         All articles queried with a single API call. However, since there might be lot
         of data to retrieve, the response is often paginated, resulting in multiple calls.
-        Other relevant information are also returned based on the default request query
-        parameters.
+        Only an extract of the article text is returned, if requested.
         '''
-        props = {
-            'categories': {
-                'clprop': 'timestamp',
-                'cllimit': 100
-            },
-            'extracts': { # excludes transcluded content
-                'explaintext': 1,
-                'exsectionformat' : 'wiki'
-            },
-            'info': {
-                'inprop': 'displaytitle|varianttitles'
-            },
-            'pageviews': {},
-            'redirects': {
-                'rdprop': 'title',
-                'rdlimit': 500
-            },
-            'revisions': {}, # can't configure for multiple titles
-            'templates': {
-                'tllimit': 500                
-            },
-            'transcludedin': {
-                'tiprop': 'title|redirect',
-                'tilimit': 500
-            }
-        }
         childprops = {}
-        for k, v in props.items():
+        for k, v in self.config['query'].items():
             childprops.update(v)
 
         if isinstance(titles, list): # else: called for a single title
             titles = "|".join(titles)
-        props = "|".join(props.keys())
+        props = "|".join(self.config['query'].keys())
         continues = {}
 
         # Call multiple times if response is paginated
@@ -130,7 +137,7 @@ class ApiConnector:
                             cum_content[pgid][k] = []
                         if k == 'templates':
                             pg[k] = [t for t in v if t['ns'] == 0]
-                        cum_content[pgid][k].extend(pg[k]) 
+                        cum_content[pgid][k].extend(pg[k])
 
                     # lengths
                     elif k in ('contributors', 'pageviews'):

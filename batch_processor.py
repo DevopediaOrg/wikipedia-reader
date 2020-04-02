@@ -5,24 +5,26 @@ class BatchProcessor:
     ''' A class to process articles in batches.  
     '''
 
-    def __init__(self):
-        pass
+    def __init__(self, api_func, minibatch_size, reader):
+        self.api_func = api_func
+        self.minibatch_size = minibatch_size
+        self.reader = reader
 
-    def batch_call_api(self, api_func, titles, minibatch_size):
+    def batch_call_api(self, titles):
         articles = []
 
         # Mini-batch of minibatch_size titles in a single API call
         minis = []
-        if minibatch_size > 1:
+        if self.minibatch_size > 1:
             titles = tuple(titles)
-            for i in range(0, len(titles), minibatch_size):
-                minis.append(titles[i:i+minibatch_size])
+            for i in range(0, len(titles), self.minibatch_size):
+                minis.append(titles[i:i+self.minibatch_size])
         else:
             minis = titles
 
         for i, mini in enumerate(minis, start=1):
             print("{}/{}: {}...".format(i, len(minis), mini))
-            content = api_func(mini)
+            content = self.api_func(mini)
             if isinstance(content, list):
                 articles.extend(content)
             else:
@@ -31,7 +33,7 @@ class BatchProcessor:
         return articles
 
 
-    def read_articles(self, reader, articles):
+    def read_articles(self, articles):
         all_content = []
         all_links = set()
 
@@ -39,7 +41,7 @@ class BatchProcessor:
             # Empty text: article doesn't exist
             if 'text' not in article or not article['text'].strip(): continue
 
-            all_links |=  reader.get_links(article['text'])
+            all_links |=  self.reader.get_links(article['text'])
 
             all_content.append(article)
 

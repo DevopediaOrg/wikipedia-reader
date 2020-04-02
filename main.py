@@ -36,9 +36,9 @@ all_content = []
 while len(curr_titles) > 0 and len(all_content) < cfg['max_pages']:
     print("Processing batch of {} article titles...".format(len(curr_titles)))
 
-    bproc = BatchProcessor()
-    articles = bproc.batch_call_api(ApiConnector().get_parsed_text, curr_titles, 1)
-    contents, next_titles = bproc.read_articles(ArticleReader(), articles)
+    bproc = BatchProcessor(ApiConnector(**cfg['api']).get_parsed_text, 1, ArticleReader())
+    articles = bproc.batch_call_api(curr_titles)
+    contents, next_titles = bproc.read_articles(articles)
 
     next_titles -= all_discards
     next_titles -= all_redirects
