@@ -2,7 +2,7 @@ import copy
 import sys
 import utils
 from api_connector import ApiConnector
-from article_reader import ArticleReader
+from article_reader import HtmlReader, WikitextReader
 from batch_processor import BatchProcessor
 from data_saver import ArticleSaver, TitleSaver
 from article_filter import ArticleFilter
@@ -10,6 +10,7 @@ from article_filter import ArticleFilter
 
 args = utils.parse_args()
 cfg = utils.read_config('config.json')
+cfg['reader']['restricted'] = args['restricted']
 utils.add_path(args['dir'], cfg['files'])
 afilter = ArticleFilter(**cfg['filter'])
 
@@ -36,7 +37,12 @@ all_content = []
 while len(curr_titles) > 0 and len(all_content) < args['maxpages']:
     print("Processing batch of {} article titles...".format(len(curr_titles)))
 
-    bproc = BatchProcessor(ApiConnector(**cfg['api']).func, 1, ArticleReader(**cfg['reader']))
+    if cfg['reader']['format'] == 'html':
+        areader = HtmlReader(**cfg['reader'])
+    else:
+        areader = WikitextReader(**cfg['reader'])
+
+    bproc = BatchProcessor(ApiConnector(**cfg['api']).func, 1, areader)
     articles = bproc.batch_call_api(curr_titles)
     contents, next_titles = bproc.read_articles(articles)
 
