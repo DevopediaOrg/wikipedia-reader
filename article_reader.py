@@ -9,8 +9,8 @@ class ArticleReader:
     https://en.wikipedia.org/wiki/Help:Cheatsheet
     '''
 
-    def __init__(self, options=None):
-        self.options = options
+    def __init__(self, **kwargs):
+        self.options = kwargs
 
     def get_links(self, text):
         # Links are within [[]], remove targets

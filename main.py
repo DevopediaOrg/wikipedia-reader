@@ -18,7 +18,7 @@ all_discards = TitleSaver.read_title_file(cfg['files']['discarded'])
 all_redirects = TitleSaver.read_title_file(cfg['files']['redirected'])
 all_titles = TitleSaver.read_title_file(cfg['files']['crawled'])
 prev_num_titles = len(all_titles)
-tot_num_titles = prev_num_titles + cfg['max_pages']
+tot_num_titles = prev_num_titles + args['maxpages']
 
 
 # Get list of articles to crawl
@@ -33,10 +33,10 @@ if len(curr_titles) == 0:
 
 # Process a batch, use links from the batch in next batch, ...
 all_content = []
-while len(curr_titles) > 0 and len(all_content) < cfg['max_pages']:
+while len(curr_titles) > 0 and len(all_content) < args['maxpages']:
     print("Processing batch of {} article titles...".format(len(curr_titles)))
 
-    bproc = BatchProcessor(ApiConnector(**cfg['api']).func, 1, ArticleReader())
+    bproc = BatchProcessor(ApiConnector(**cfg['api']).func, 1, ArticleReader(**cfg['reader']))
     articles = bproc.batch_call_api(curr_titles)
     contents, next_titles = bproc.read_articles(articles)
 

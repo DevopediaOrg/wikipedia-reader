@@ -19,6 +19,7 @@ Before invoking the script, you may wish to check or alter values in the configu
 File `main.py` is the entry point. Here are some useful commands:
 * `main.py`: start with seed titles
 * `main.py -c`: continue with pending titles identified from earlier crawls
+* `main.py -m 15`: crawl a maximum of 15 articles
 * `main.py -r`: restricted crawl so that only relevant articles are obtained
 * `main.py -h`: show help
 

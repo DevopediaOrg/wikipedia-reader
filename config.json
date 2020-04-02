@@ -1,11 +1,12 @@
 {
-    "max_pages" : 10,
+    "reader" : {
+        "format": "wikitext"
+    },
     "filter" : {
         "includes" : ["Category"],
         "common_word_file" : "data/words.txt"
     },
     "seed" : "data/seed_titles.txt",
-    "outdir": "output",
     "files" : {
         "crawled": "crawled_titles.txt",
         "discarded": "discarded_titles.txt",
