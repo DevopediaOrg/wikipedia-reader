@@ -1,5 +1,5 @@
 {
-    "max_pages" : 3,
+    "max_pages" : 100,
     "use_cache" : false,
     "filter" : {
         "includes" : ["Category"],

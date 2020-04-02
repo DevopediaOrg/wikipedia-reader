@@ -37,12 +37,12 @@ while len(curr_titles) > 0 and len(all_content) < cfg['max_pages']:
     print("Processing batch of {} article titles...".format(len(curr_titles)))
 
     bproc = BatchProcessor()
-    articles = bproc.batch_call_api(ApiConnector(), curr_titles)
-    content, next_titles = bproc.read_articles(ArticleReader(), articles)
+    articles = bproc.batch_call_api(ApiConnector().get_parsed_text, curr_titles, 1)
+    contents, next_titles = bproc.read_articles(ArticleReader(), articles)
 
     next_titles -= all_discards
     next_titles -= all_redirects
-    content, redirects_src, redirects_dst = afilter.find_redirects(content)
+    contents, redirects_src, redirects_dst = afilter.find_redirects(contents)
     all_redirects |= redirects_src # no need to crawl
     next_titles |= redirects_dst # add for a future batch
 
@@ -50,7 +50,7 @@ while len(curr_titles) > 0 and len(all_content) < cfg['max_pages']:
     all_discards |= discarded_titles
 
     all_pending |= utils.limit_titles(all_titles, next_titles, tot_num_titles)
-    all_content.extend(content)
+    all_content.extend(contents)
 
     curr_titles = copy.copy(next_titles)
     next_titles = set()

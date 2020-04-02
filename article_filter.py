@@ -50,17 +50,23 @@ class ArticleFilter:
                 kos.add(title)
         return oks, kos
 
-    def find_redirects(self, content):
+    def find_redirects(self, articles):
         oks = []
         redirects_src = set()
         redirects_dst = set()
 
-        for (title, text) in content:
-            m = re.search(r'^\s*#REDIRECT\s*\[\[(.*)\]\]', text, flags=re.IGNORECASE)
-            if m:
-                redirects_src.add(title)
-                redirects_dst.add(m.group(1))
+        for article in articles:
+            if 'redirects' in article and article['redirects']:
+                for rdt in article['redirects']:
+                    redirects_src.add(rdt['from'])
+                    redirects_dst.add(rdt['to'])
+                oks.append(article)
             else:
-                oks.append((title, text))
+                m = re.search(r'^\s*#REDIRECT\s*\[\[(.*)\]\]', article['text'], flags=re.IGNORECASE)
+                if m:
+                    redirects_src.add(article['title'])
+                    redirects_dst.add(m.group(1))
+                else:
+                    oks.append(article)
         
         return oks, redirects_src, redirects_dst

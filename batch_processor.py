@@ -8,12 +8,26 @@ class BatchProcessor:
     def __init__(self):
         pass
 
-    def batch_call_api(self, conn, titles):
+    def batch_call_api(self, api_func, titles, minibatch_size):
         articles = []
-        for i, title in enumerate(titles, start=1):
-            print("{}/{}: {}...".format(i, len(titles), title))
-            text = conn.request_text(title)
-            articles.append((title, text))
+
+        # Mini-batch of minibatch_size titles in a single API call
+        minis = []
+        if minibatch_size > 1:
+            titles = tuple(titles)
+            for i in range(0, len(titles), minibatch_size):
+                minis.append(titles[i:i+minibatch_size])
+        else:
+            minis = titles
+
+        for i, mini in enumerate(minis, start=1):
+            print("{}/{}: {}...".format(i, len(minis), mini))
+            content = api_func(mini)
+            if isinstance(content, list):
+                articles.extend(content)
+            else:
+                articles.append(content)
+
         return articles
 
 
@@ -21,15 +35,13 @@ class BatchProcessor:
         all_content = []
         all_links = set()
 
-        for title, text in articles:
+        for article in articles:
             # Empty text: article doesn't exist
-            if not text.strip(): continue
+            if 'text' not in article or not article['text'].strip(): continue
 
-            content, links = reader.read(title, text)
-            if content:
-                all_content.append(content)
-            if links:
-                all_links |= links
+            all_links |=  reader.get_links(article['text'])
+
+            all_content.append(article)
 
         return all_content, all_links
 

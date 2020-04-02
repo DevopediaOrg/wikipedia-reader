@@ -12,8 +12,10 @@ class ArticleReader:
     def __init__(self, options=None):
         self.options = options
 
-    def read(self, title, text):
+    def get_links(self, text):
         # Links are within [[]], remove targets
-        links = re.findall(r'\[\[([^#|\]]+)[#\|]?.*?\]\]', text)
-        return (title, text), set(links)
+        return set(re.findall(r'\[\[([^#|\]]+)[#\|]?.*?\]\]', text))
+
+    def read_html(self, title, html):
+        pass
     

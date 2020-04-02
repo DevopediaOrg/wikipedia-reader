@@ -11,6 +11,7 @@ pip install -r requirements.txt
 python -m spacy download en_core_web_sm
 ```
 
+If you've problem installing `spacy` on Windows (perhaps due to C++ compiler issues), try Anaconda distribution and install it via Anaconda. This distribution may have a slightly older version of `spacy`.
 
 # Usage
 Before invoking the script, you may wish to check or alter values in the configuration file `config.json`. You can also modify the seed list in `data/seed_titles.txt`.

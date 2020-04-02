@@ -1,5 +1,5 @@
 import bz2
-import csv
+import json
 from glob import glob
 import os
 import os.path
@@ -31,25 +31,22 @@ class ArticleSaver:
     @classmethod
     def write_content_file(cls, fname, content):
         # Derive the next filename suffix
-        acfiles = glob(fname + '*.csv')
+        acfiles = glob(fname + '*.json')
         if acfiles:
-            nextid = 1 + max(int(re.sub(r'.*-(\d+)\.csv$', r'\1', os.path.basename(f))) for f in acfiles)
+            nextid = 1 + max(int(re.sub(r'.*-(\d+)\.json$', r'\1', os.path.basename(f))) for f in acfiles)
         else:
             nextid = 0
-        fname = "{}-{}.csv".format(fname, nextid)
+        fname = "{}-{}.json".format(fname, nextid)
 
         # Save csv and bz2 
-        with open(fname, 'w+', newline='', encoding='utf-8') as csvfile, \
+        with open(fname, 'w+', newline='', encoding='utf-8') as jsonfile, \
              bz2.open(fname + '.bz2', 'wb') as bzfile:
-            # Save to csv
-            writer = csv.writer(csvfile)
-            writer.writerow(('Title', 'Text'))
-            for c in content:
-                writer.writerow(item.replace('\n', '\\n') for item in c)
+            # Save to json
+            jsonfile.write(json.dumps(content, indent=2))
 
-            # Read from csv and save to bz2
-            csvfile.seek(os.SEEK_SET)
-            bzfile.write(csvfile.read().encode('utf-8'))
+            # Read from json and save to bz2
+            jsonfile.seek(os.SEEK_SET)
+            bzfile.write(jsonfile.read().encode('utf-8'))
 
 
 class TitleSaver:
