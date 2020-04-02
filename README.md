@@ -1,7 +1,7 @@
 # Overview
-Use Wikipedia API to read content from Wikipedia. Rather than call the API directly, we use third-party package `mwclient` for this purpose. We start from a seed list of article titles. We crawl these articles via the API. Then we extract more article titles from the links contained in crawled articles. These new titles will be crawled at the next batch.
+Use Wikipedia API to read content from Wikipedia. Rather than call the API directly, we use third-party package `mwclient` for this purpose. We start from a seed list of article titles. We crawl these articles via the API. Then we extract more article titles from the links contained in crawled articles. These new titles are crawled at the next batch.
 
-Not all titles are relevant to our work. For example, we may interested in only tech-related articles. Thus, the seed articles should be formed as such. In addition, we filter out titles that are not irrelevant. To aid this process, we use a list of common English words. We may use [Mieliestronk's 58K wordlist](http://www.mieliestronk.com/wordlist.html) for this purpose. These are save in `data/words.txt`.
+Not all titles are relevant to our work. For example, we may be interested in only tech-related articles. Thus, the seed articles should be formed as such. In addition, we filter out titles that are not irrelevant. To aid this process, we use a list of common English words. We may use [Mieliestronk's 58K wordlist](http://www.mieliestronk.com/wordlist.html) for this purpose. These are saved in `data/words.txt`.
 
 
 # Installation

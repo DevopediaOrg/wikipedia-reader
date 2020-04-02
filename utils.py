@@ -21,14 +21,17 @@ def parse_args():
 
     args = vars(parser.parse_args())
 
-    # Input validation
-    if args['out'] is None and args['continue']:
-        parser.print_help()
-        sys.exit("\nERR: Fresh run on a new folder. Can't use -c option.")
-
-    # Fill in defaults
     if args['basepath'] is None:
         args['basepath'] = 'output'
+
+    # Input validation
+    if args['continue'] and args['out'] is None:
+        parser.print_help()
+        sys.exit("\nERR: Fresh run on a new folder. Can't use -c without -o.")
+    if args['continue'] and not os.path.isdir(os.path.join(args['basepath'], args['out'])):
+        parser.print_help()
+        sys.exit("\nERR: Using -o but the folder '{}' is not found.".format(args['out']))
+
     if args['out'] is None:
         args['out'] = datetime.now().strftime('%Y%h%d.%H%M%S')
     args['dir'] = "{}/{}".format(args['basepath'], args['out'])
