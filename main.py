@@ -22,7 +22,7 @@ tot_num_titles = prev_num_titles + cfg['max_pages']
 
 
 # Get list of articles to crawl
-seedfile = cfg['files']['pending'] if args['pending'] else cfg['seed']
+seedfile = cfg['files']['pending'] if args['continue'] else cfg['seed']
 curr_titles = TitleSaver.read_title_file(seedfile)
 curr_titles -= all_discards
 curr_titles -= all_redirects
@@ -36,7 +36,7 @@ all_content = []
 while len(curr_titles) > 0 and len(all_content) < cfg['max_pages']:
     print("Processing batch of {} article titles...".format(len(curr_titles)))
 
-    bproc = BatchProcessor(ApiConnector(**cfg['api']).get_parsed_text, 1, ArticleReader())
+    bproc = BatchProcessor(ApiConnector(**cfg['api']).func, 1, ArticleReader())
     articles = bproc.batch_call_api(curr_titles)
     contents, next_titles = bproc.read_articles(articles)
 

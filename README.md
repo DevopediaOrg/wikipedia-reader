@@ -18,9 +18,12 @@ Before invoking the script, you may wish to check or alter values in the configu
 
 File `main.py` is the entry point. Here are some useful commands:
 * `main.py`: start with seed titles
-* `main.py -p`: start with pending titles identified from earlier crawls
+* `main.py -c`: continue with pending titles identified from earlier crawls
+* `main.py -r`: restricted crawl so that only relevant articles are obtained
 * `main.py -h`: show help
 
-Output files are stored in folder `data/`.
+Output files are stored within path `output/` by default. However, this can be configured in `config.json`. For example, when running on Google Colab, you can change this to store files on your Google Drive space.
 
-To crawl continuously (Ctrl-C to terminate), call this batch run: `sh runner.sh`
+To crawl continuously (Ctrl-C to terminate), do batch run:
+* `sh runner.sh`: files are saved within default path
+* `sh runner.sh friday_runs`: files are saved in the specified path (example here is `friday_runs`)

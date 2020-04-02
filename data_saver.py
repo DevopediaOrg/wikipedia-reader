@@ -7,7 +7,8 @@ import re
 
 
 class ArticleSaver:
-    ''' Read and write content of one or more articles to disk.  
+    ''' Read and write content of one or more articles to disk.
+    Articles are saved in JSON format.
     '''
 
     def __init__(self):
@@ -16,16 +17,11 @@ class ArticleSaver:
     @classmethod
     def read_content_file(cls, fname):
         content = []
-
         try:
-            csv.field_size_limit(1000000)
-            with open(fname, 'r', newline='', encoding='utf-8') as csvfile:
-                reader = csv.reader(csvfile)
-                for row in reader:
-                    content.append(row)
+            with open(fname, 'r', encoding='utf-8') as jsonfile:
+                content = json.load(jsonfile)
         except FileNotFoundError:
             pass
-
         return content
 
     @classmethod
@@ -38,19 +34,17 @@ class ArticleSaver:
             nextid = 0
         fname = "{}-{}.json".format(fname, nextid)
 
-        # Save csv and bz2 
+        # Save json; read from json and save to bz2
         with open(fname, 'w+', newline='', encoding='utf-8') as jsonfile, \
              bz2.open(fname + '.bz2', 'wb') as bzfile:
-            # Save to json
-            jsonfile.write(json.dumps(content, indent=2))
-
-            # Read from json and save to bz2
+            json.dump(content, jsonfile, indent=2)
             jsonfile.seek(os.SEEK_SET)
             bzfile.write(jsonfile.read().encode('utf-8'))
 
 
 class TitleSaver:
-    ''' Read and write article titles to disk.  
+    ''' Read and write article titles to disk in text format.
+    Each line has one title.
     '''
 
     def __init__(self):

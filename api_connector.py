@@ -14,8 +14,16 @@ class ApiConnector:
             sys.exit("ERR: API endpoint is missing in configuration. Quitting...")
 
         # Put defaults for some missing configurations
+        self.func = self.get_parsed_text
+        if 'func' in self.config:
+            if getattr(self, self.config['func'], None) is None:
+                sys.exit("ERR: API function '{}' is missing. Use one of (get_text, get_parsed_text, get_info). Quitting...".format(self.config['func']))
+            else:
+                self.func = getattr(self, self.config['func'])
+
         if 'parse' not in self.config or not self.config['parse']:
             self.config['parse'] = 'categories|displaytitle|links|revid|sections|templates|text|wikitext'
+
         if 'query' not in self.config or not self.config['query']:
             self.config['query'] = {
                 'categories': {

@@ -1,16 +1,21 @@
 {
-    "max_pages" : 100,
-    "use_cache" : false,
+    "max_pages" : 10,
     "filter" : {
         "includes" : ["Category"],
         "common_word_file" : "data/words.txt"
     },
-    "seed": "data/seed_titles.txt",
+    "seed" : "data/seed_titles.txt",
+    "outdir": "output",
     "files" : {
         "crawled": "crawled_titles.txt",
         "discarded": "discarded_titles.txt",
         "redirected": "redirected_titles.txt",
         "pending": "pending_titles.txt",
         "article_content_prefix": "ac"
+    },
+    "api" : {
+        "endpoint" : "en.wikipedia.org",
+        "parse" : "displaytitle|revid|text|wikitext",
+        "func" : "get_parsed_text"
     }
 }
