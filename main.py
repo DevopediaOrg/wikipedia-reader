@@ -1,4 +1,5 @@
 import copy
+import os
 import sys
 import utils
 from api_connector import ApiConnector
@@ -10,10 +11,9 @@ from article_filter import ArticleFilter
 
 args = utils.parse_args()
 cfg = utils.read_config('config.json')
-cfg['reader']['restricted'] = args['restricted']
-cfg['reader']['seedstart'] = False if args['continue'] else True
 utils.add_path(args['dir'], cfg['files'])
 afilter = ArticleFilter(**cfg['filter'])
+
 
 # Get lists stored in files from previous crawls
 all_discards = TitleSaver.read_title_file(cfg['files']['discarded'])
@@ -23,8 +23,18 @@ prev_num_titles = len(all_titles)
 tot_num_titles = prev_num_titles + args['maxpages']
 
 
+# Are we seeding or crawling articles?
+if args['seed']:
+    seedfile = cfg['seed']
+    context = 'seed'
+    fields = os.path.split(cfg['files']['article_content_prefix'])
+    cfg['files']['article_content_prefix'] = os.path.join(*fields[:-1], 'seed.{}'.format(fields[-1]))
+else:
+    seedfile = cfg['files']['pending']
+    context = 'article'
+
+
 # Get list of articles to crawl
-seedfile = cfg['files']['pending'] if args['continue'] else cfg['seed']
 curr_titles = TitleSaver.read_title_file(seedfile)
 curr_titles -= all_discards
 curr_titles -= all_redirects
@@ -36,13 +46,12 @@ if len(curr_titles) == 0:
 # Process a batch, use links from the batch in next batch, ...
 all_content = []
 while len(curr_titles) > 0 and len(all_content) < args['maxpages']:
-    print("Processing batch of {} article titles...".format(len(curr_titles)))
+    print("Processing batch of {} {} titles...".format(len(curr_titles), context))
 
     if cfg['reader']['format'] == 'html':
-        areader = HtmlReader(**cfg['reader'])
+        areader = HtmlReader(**cfg['reader'], seed=cfg['seed'], restricted=args['restricted'])
     else:
-        areader = WikitextReader(**cfg['reader'])
-    cfg['reader']['seedstart'] = False # disable for next batch
+        areader = WikitextReader(**cfg['reader'], seed=cfg['seed'], restricted=args['restricted'])
 
     bproc = BatchProcessor(ApiConnector(**cfg['api']).func, 1, areader)
     articles = bproc.batch_call_api(curr_titles)
@@ -60,8 +69,11 @@ while len(curr_titles) > 0 and len(all_content) < args['maxpages']:
     all_pending |= utils.limit_titles(all_titles, next_titles, tot_num_titles)
     all_content.extend(contents)
 
-    curr_titles = copy.copy(next_titles)
-    next_titles = set()
+    if cfg['seed']:
+        curr_titles = set()
+    else:
+        curr_titles = copy.copy(next_titles)
+        next_titles = set()
 
 
 # Save all data

@@ -6,7 +6,6 @@ Outline of academic disciplines#Computer_Science|Mathematics|Statistics|Engineer
 Outline of applied physics
 Outline of artificial intelligence
 Outline of automation
-Outline of biotechnology
 Outline of computer engineering
 Outline of computer programming
 Outline of computer science
@@ -95,7 +94,6 @@ List of telephony terminology
 List of terms relating to algorithms and data structures
 Machine vision glossary
 Index of Internet-related articles
-Index of biotechnology articles
 Index of home automation articles
 Index of telephone-related articles
 Index of video-related articles
