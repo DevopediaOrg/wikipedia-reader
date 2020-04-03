@@ -7,11 +7,13 @@ else
     basepath=output
 fi
 
+PYPATH=python3
+
 iter=0
 odir=$(date +%Y%h%d.%H%M%S)
 printf "======== Iteration %03d ========\n" $iter
 # Use maximum -m value to exhaust the entire seed file
-python main.py -s -b $basepath -d $odir -m 10
+$PYPATH main.py -s -b $basepath -d $odir -m 1000
 
 PendingFile=$basepath/$odir/pending_titles.txt
 while [ -s  $PendingFile ]
@@ -20,5 +22,5 @@ do
     printf "======== Iteration %03d ========\n" $iter
     lines=$(wc -l $PendingFile)
     echo Pending titles $lines...
-    python main.py -r -b $basepath -d $odir -m 10
+    $PYPATH main.py -r -b $basepath -d $odir -m 100
 done
