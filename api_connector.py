@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import json
+import re
 import sys
 import mwclient
 
@@ -81,6 +82,11 @@ class ApiConnector:
         excluded. Wikitext contains all unexpanded transcluded content.
         This method makes a single API call.
         '''
+        # Remove targets (section names separated by |) for request but track them for later use
+        targets = re.findall(r'.*#(.*)', title)
+        if targets:
+            targets = targets[0].split('|')
+
         try:
             content = self.site.get('parse', page=title, prop=self.config['parse'], redirects=1)
             if 'warnings' in content:
@@ -96,6 +102,8 @@ class ApiConnector:
         content['parse']['html'] = content['parse']['text']['*']
         content['parse']['text'] = content['parse']['wikitext']['*']
         del(content['parse']['wikitext'])
+        if targets:
+            content['parse']['targets'] = targets
 
         return content['parse']
 

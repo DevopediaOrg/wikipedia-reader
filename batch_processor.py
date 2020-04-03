@@ -41,7 +41,8 @@ class BatchProcessor:
             # Empty text: article doesn't exist
             if 'text' not in article or not article['text'].strip(): continue
 
-            all_links |=  self.reader.get_links(article['text'])
+            targets = article['targets'] if 'targets' in article else []
+            all_links |=  self.reader.get_links(article['text'], targets)
 
             all_content.append(article)
 

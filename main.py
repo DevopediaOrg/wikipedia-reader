@@ -11,6 +11,7 @@ from article_filter import ArticleFilter
 args = utils.parse_args()
 cfg = utils.read_config('config.json')
 cfg['reader']['restricted'] = args['restricted']
+cfg['reader']['seedstart'] = False if args['continue'] else True
 utils.add_path(args['dir'], cfg['files'])
 afilter = ArticleFilter(**cfg['filter'])
 
@@ -41,6 +42,7 @@ while len(curr_titles) > 0 and len(all_content) < args['maxpages']:
         areader = HtmlReader(**cfg['reader'])
     else:
         areader = WikitextReader(**cfg['reader'])
+    cfg['reader']['seedstart'] = False # disable for next batch
 
     bproc = BatchProcessor(ApiConnector(**cfg['api']).func, 1, areader)
     articles = bproc.batch_call_api(curr_titles)
