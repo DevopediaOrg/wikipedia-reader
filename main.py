@@ -50,11 +50,11 @@ while len(curr_titles) > 0 and len(all_content) < args['maxpages']:
     print("Processing batch of {} {} titles...".format(len(curr_titles), context))
 
     if cfg['reader']['format'] == 'html':
-        areader = HtmlReader(**cfg['reader'], seed=args['seed'], restricted=args['restricted'])
+        areader = HtmlReader(**cfg['reader'], restricted=args['restricted'])
     else:
-        areader = WikitextReader(**cfg['reader'], seed=args['seed'], restricted=args['restricted'])
+        areader = WikitextReader(**cfg['reader'], restricted=args['restricted'])
 
-    bproc = BatchProcessor(ApiConnector(**cfg['api']).func, 1, areader)
+    bproc = BatchProcessor(ApiConnector(**cfg['api']).func, 1, areader, seed=args['seed'])
     articles = bproc.batch_call_api(curr_titles)
     contents, next_titles = bproc.read_articles(articles)
 

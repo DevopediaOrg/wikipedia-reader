@@ -75,10 +75,6 @@ class WikitextReader(ArticleReader):
         patt = r'\{\{term\|.*?' + self.linkpatt + r'.*?\}\}'
         self.add_links(all_links, text, patt, re.M)
 
-        # ---- categories ----
-        # Too many to enumerate in seed file
-        # Ignored because it can bring in unrelated content
-
         # ---- indices ----
         # sections marked by header: eg. == A ==, == Z ==
         # may include links to categories: eg. :Category:Biotechnology, Category:Biotechnology

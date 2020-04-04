@@ -5,10 +5,11 @@ class BatchProcessor:
     ''' A class to process articles in batches.  
     '''
 
-    def __init__(self, api_func, minibatch_size, reader):
+    def __init__(self, api_func, minibatch_size, reader, **kwargs):
         self.api_func = api_func
         self.minibatch_size = minibatch_size
         self.reader = reader
+        self.config = kwargs
 
     def batch_call_api(self, titles):
         articles = []
@@ -42,7 +43,7 @@ class BatchProcessor:
             if 'text' not in article or not article['text'].strip(): continue
 
             targets = article['targets'] if 'targets' in article else []
-            if self.reader.config['seed']:
+            if self.config['seed']:
                 all_links |=  self.reader.get_seed_links(article['text'], targets)
             else:
                 all_links |=  self.reader.get_links(article['text'])
