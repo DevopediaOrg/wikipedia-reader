@@ -3,7 +3,7 @@
         "format": "wikitext"
     },
     "filter" : {
-        "includes" : ["Category"],
+        "includes" : ["Template"],
         "common_word_file" : "data/words.txt"
     },
     "seed" : "data/seed-basic-tech.txt",
@@ -12,6 +12,7 @@
         "discarded": "discarded_titles.txt",
         "redirected": "redirected_titles.txt",
         "pending": "pending_titles.txt",
+        "next_pending": "next_pending_titles.txt",
         "article_content_prefix": "ac"
     },
     "api" : {

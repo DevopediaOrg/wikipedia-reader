@@ -6,6 +6,7 @@ import argparse
 from datetime import datetime
 import json
 import os
+import random
 import sys
 
 
@@ -54,15 +55,17 @@ def add_path(path, files):
         files[k] = "{}/{}".format(path, v)
 
 
-def limit_titles(all_titles, titles, limit):
+def limit_titles(done_titles, todo_titles, limit):
     '''Both arguments are modified. Returns excluded titles.'''
-    pending_titles = set()
-
-    new_titles = titles - all_titles # remove overlaps
-    while len(all_titles) + len(new_titles) > limit:
-        pending_titles.add(new_titles.pop())
-    all_titles |= new_titles
-    titles.clear()
-    titles |= new_titles
-
-    return pending_titles
+    new_titles = todo_titles - done_titles # remove overlaps
+    
+    if len(new_titles) > limit - len(done_titles):
+        curr_titles = set(random.sample(new_titles, limit - len(done_titles)))
+    else:
+        curr_titles = new_titles
+    
+    done_titles |= curr_titles # updating pre-emptively (not done yet)
+    todo_titles.clear()
+    todo_titles |= curr_titles
+    
+    return  new_titles - curr_titles

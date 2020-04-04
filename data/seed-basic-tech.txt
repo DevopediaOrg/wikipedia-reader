@@ -41,14 +41,12 @@ Outline of the Internet
 Space technology
 Alphabetical list of programming languages
 Base Class Library
-Branches of engineering
 Categorical list of programming languages
 Generational list of programming languages
 Graphics file formats
 List of Ajax frameworks
 List of algorithms
 List of AMD microprocessors
-List of colors
 List of data structures
 List of digital library projects
 List of free software web applications
@@ -68,7 +66,6 @@ List of open source software packages
 List of operating systems
 List of screen readers
 List of software bugs
-List of TCP and UDP port numbers
 List of UNIVAC products
 List of Unix programs
 List of Unix systems
@@ -78,12 +75,10 @@ Lists of microcomputers
 Test automation
 Timeline of programming languages
 Alternative terms for free software 
-Glossary of HVAC
 Glossary of Unified Modeling Language terms
 Glossary of artificial intelligence
 Glossary of computer science
 Glossary of computers
-Glossary of engineering
 Internet slang
 List of Internet-related terminology
 List of blogging terms

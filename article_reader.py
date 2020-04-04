@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import re
+import sys
 
 
 class ArticleReader(ABC):
@@ -86,20 +87,33 @@ class WikitextReader(ArticleReader):
         for stext in sectexts:
             self.add_links(all_links, stext)
 
-        return set(all_links)
+        all_links = {lnk.strip() for lnk in all_links}
+
+        return all_links
 
     def get_links(self, text):
         all_links = []
 
-        # Use only See also section
-        # TODO Current code ignores See also if it's the last section (rare case for relevant articles)
-        if self.config['restricted']: #\n==.*
+        if self.config['restricted']:
+            # ---- See also ----
+            # TODO Ignores See also if it's the last section (rare case for relevant articles)
             m = re.search(r'.*\n==\s*See also\s*==\s*\n(.*?)\n==.*', text, flags=re.I|re.S)
-            text = m.group(1) if m else ''
+            if m:
+                self.add_links(all_links, m.group(1))
 
-        self.add_links(all_links, text)
+            # ---- Transclusions ----
+            # Template: eg. {{Software engineering}}, {{Software engineering|state=off}}
+            # Article: eg. {{:Software engineering}}
+            #m = re.search(r'.*\{\{\s*([^|]+?).*?\}\}.*', text, flags=re.S)
+            #if m:
+            #    self.add_links(all_links, m.group(1))
 
-        return set(all_links)
+        else:
+            self.add_links(all_links, text)
+
+        all_links = {lnk.strip() for lnk in all_links}
+
+        return all_links
 
 
 class HtmlReader(ArticleReader):
@@ -108,6 +122,7 @@ class HtmlReader(ArticleReader):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        sys.exit("ERR: HtmlReader is not implemented. Quitting...")
 
     def get_links(self, text, targets):
         pass
