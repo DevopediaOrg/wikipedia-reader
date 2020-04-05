@@ -28,7 +28,8 @@ def parse_args():
     parser.add_argument('-m','--maxpages', required=False, default=maxpages, type=int,
         help='Maximum number of pages to crawl. Default is {}. Range is 1-{}.'.format(maxpages, rmaxpages))
     parser.add_argument('-r','--restricted', action='store_true', required=False,
-        help='Parse article content in a restricted manner when identifying more articles to crawl.')
+        help='''Parse article content in a restricted manner when identifying more articles to crawl.
+                Not relevant when seeding.''')
     parser.add_argument('-s','--seed', action='store_true', required=False,
         help='Crawl seed articles to discover other articles to crawl. The latter are added to pending list.')
 
