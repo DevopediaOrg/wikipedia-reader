@@ -45,7 +45,7 @@ if len(curr_titles) == 0:
     sys.exit("No new titles to crawl. Quitting...")
 
 
-# Process a batch, use links from the batch in next batch, ...
+# Process a batch, use links from the batch in a future batch, ...
 all_content = []
 while len(curr_titles) > 0 and len(all_content) < args['maxpages']:
     print("Processing batch of {} {} titles...".format(len(curr_titles), context))
