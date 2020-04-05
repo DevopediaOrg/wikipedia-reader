@@ -24,7 +24,7 @@ class BatchProcessor:
             minis = titles
 
         for i, mini in enumerate(minis, start=1):
-            print("{}/{}: {}...".format(i, len(minis), mini))
+            print("{}/{}: {}...".format(i, len(minis), mini), flush=True)
             content = self.api_func(mini)
             if isinstance(content, list):
                 articles.extend(content)

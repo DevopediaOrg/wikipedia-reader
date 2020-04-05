@@ -19,6 +19,7 @@ afilter = ArticleFilter(**cfg['filter'])
 all_discards = TitleSaver.read_title_file(cfg['files']['discarded'])
 all_redirects = TitleSaver.read_title_file(cfg['files']['redirected'])
 all_titles = TitleSaver.read_title_file(cfg['files']['crawled'])
+all_ids = TitleSaver.read_title_file(cfg['files']['crawled_ids'])
 all_next_pending = TitleSaver.read_title_file(cfg['files']['next_pending'])
 prev_num_titles = len(all_titles)
 tot_num_titles = prev_num_titles + args['maxpages']
@@ -58,7 +59,14 @@ while len(curr_titles) > 0 and len(all_content) < args['maxpages']:
     articles = bproc.batch_call_api(curr_titles)
     contents, next_titles = bproc.read_articles(articles)
 
-    all_content.extend(contents)
+    # Don't add duplicates
+    uniq_contents = []
+    for content in contents:
+        currid = str(content['pageid'])
+        if currid not in all_ids:
+            uniq_contents.append(content)
+            all_ids.add(currid)
+    all_content.extend(uniq_contents)
 
     next_titles -= all_discards
     next_titles -= all_redirects
@@ -93,6 +101,7 @@ while len(curr_titles) > 0 and len(all_content) < args['maxpages']:
 # Save all data
 ArticleSaver.write_content_file(cfg['files']['article_content_prefix'], all_content)
 TitleSaver.write_title_file(cfg['files']['crawled'], all_titles)
+TitleSaver.write_title_file(cfg['files']['crawled_ids'], all_ids)
 TitleSaver.write_title_file(cfg['files']['pending'], all_pending)
 TitleSaver.write_title_file(cfg['files']['next_pending'], all_next_pending)
 TitleSaver.write_title_file(cfg['files']['discarded'], all_discards)
