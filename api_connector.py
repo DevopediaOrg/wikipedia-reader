@@ -18,7 +18,8 @@ class ApiConnector:
         self.func = self.get_parsed_text
         if 'func' in self.config:
             if getattr(self, self.config['func'], None) is None:
-                sys.exit("ERR: API function '{}' is missing. Use one of (get_text, get_parsed_text, get_info). Quitting...".format(self.config['func']))
+                sys.exit("ERR: API function '{}' is missing. Use one of {}. Quitting...".format(
+                    self.config['func'], '(get_text, get_parsed_text, get_info)'))
             else:
                 self.func = getattr(self, self.config['func'])
 

@@ -31,7 +31,7 @@ class ArticleSaver:
         if acfiles:
             nextid = 1 + max(int(re.sub(r'.*\.(\d+)\.json$', r'\1', os.path.basename(f))) for f in acfiles)
         else:
-            nextid = 0
+            nextid = 1 # start from 1, not 0
         fname = "{}.{}.json".format(fname, nextid)
 
         # Save json; read from json and save to bz2

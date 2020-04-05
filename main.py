@@ -57,6 +57,8 @@ while len(curr_titles) > 0 and len(all_content) < args['maxpages']:
 
     bproc = BatchProcessor(ApiConnector(**cfg['api']).func, 1, areader, seed=args['seed'])
     articles = bproc.batch_call_api(curr_titles)
+
+    print("Reading {} articles...".format(len(articles)))
     contents, next_titles = bproc.read_articles(articles)
 
     # Don't add duplicates
