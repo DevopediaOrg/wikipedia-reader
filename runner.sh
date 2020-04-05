@@ -9,7 +9,7 @@ fi
 
 PYPATH=python3
 
-iter=0
+iter=-1
 odir=$(date +%Y%h%d.%H%M%S)
 printf "======== Iteration %03d ========\n" $iter
 # Use maximum -m value to exhaust the entire seed file

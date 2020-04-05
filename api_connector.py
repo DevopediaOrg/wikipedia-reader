@@ -83,7 +83,7 @@ class ApiConnector:
         This method makes a single API call.
         '''
         # Remove targets (section names separated by |) for request but track them for later use
-        targets = re.findall(r'.*#(.*)', title)
+        targets = re.findall(r'#(.*)', title)
         if targets:
             targets = targets[0].split('|')
 

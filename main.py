@@ -58,6 +58,8 @@ while len(curr_titles) > 0 and len(all_content) < args['maxpages']:
     articles = bproc.batch_call_api(curr_titles)
     contents, next_titles = bproc.read_articles(articles)
 
+    all_content.extend(contents)
+
     next_titles -= all_discards
     next_titles -= all_redirects
     contents, redirects_src, redirects_dst = afilter.find_redirects(contents)
@@ -71,22 +73,27 @@ while len(curr_titles) > 0 and len(all_content) < args['maxpages']:
     all_next_pending |= next_titles
 
     if not all_pending:
+        # Crawled all_pending fully: switch to all_next_pending
         print("Switching to next level of links...")
         curr_titles = all_next_pending
         all_next_pending = set()
-        all_pending = utils.limit_titles(all_titles, curr_titles, tot_num_titles)
-    all_content.extend(contents)
-
-    if args['seed']:
-        # only one batch when seeding
-        # newly discovered links are saved but not crawled when seeding
-        curr_titles = set()
+        if args['seed']:
+            # only one batch when seeding
+            # newly discovered links are saved but not crawled when seeding
+            all_pending = curr_titles - all_titles
+            curr_titles = set()
+        else:
+            all_pending = utils.limit_titles(all_titles, curr_titles, tot_num_titles)
+        all_next_pending -= all_pending
+    else:
+        # Nothing more to crawl since reached limit in this batch
+        break
 
 
 # Save all data
 ArticleSaver.write_content_file(cfg['files']['article_content_prefix'], all_content)
 TitleSaver.write_title_file(cfg['files']['crawled'], all_titles)
 TitleSaver.write_title_file(cfg['files']['pending'], all_pending)
-TitleSaver.write_title_file(cfg['files']['next_pending'], all_next_pending - all_pending)
+TitleSaver.write_title_file(cfg['files']['next_pending'], all_next_pending)
 TitleSaver.write_title_file(cfg['files']['discarded'], all_discards)
 TitleSaver.write_title_file(cfg['files']['redirected'], all_redirects)

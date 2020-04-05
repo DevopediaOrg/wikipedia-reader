@@ -28,9 +28,24 @@ class WikitextReader(ArticleReader):
         # Links are within [[]], remove targets
         self.linkpatt = r'\[\[([^#|\]]+)[#\|]?.*?\]\]'
 
+    def clean_link(self, link):
+        # eg. 'Teletext  ' -> 'Teletext'
+        clnk = link.strip()
+
+        # eg. eBay -> EBay, iPhone -> IPhone : the latter is the URL form
+        clnk = clnk[0:1].upper() + clnk[1:]
+
+        # eg. Function (Mathematics) -> Function (mathematics): Wikipedia has a redirect
+        # eg. function (Computer science) -> function (computer science): Wikipedia has no redirect
+        # eg. Bash (Unix shell) -> Bash (unix shell): the latter is not a valid article
+        # Ignoring due to the last example
+
+        return clnk
+
     def add_links(self, dst, text, patt=None, flags=0):
         if patt is None: patt = self.linkpatt
         links = re.findall(patt, text, flags=flags)
+        links = [self.clean_link(link) for link in links]
         dst.extend(links)
 
     def get_seed_links(self, text, targets):
@@ -83,8 +98,6 @@ class WikitextReader(ArticleReader):
         for stext in sectexts:
             self.add_links(all_links, stext)
 
-        all_links = {lnk.strip() for lnk in all_links}
-
         return all_links
 
     def get_links(self, text):
@@ -93,21 +106,21 @@ class WikitextReader(ArticleReader):
         if self.config['restricted']:
             # ---- See also ----
             # TODO Ignores See also if it's the last section (rare case for relevant articles)
-            m = re.search(r'.*\n==\s*See also\s*==\s*\n(.*?)\n==.*', text, flags=re.I|re.S)
+            m = re.search(r'\n==\s*See also\s*==\s*\n(.*?)\n==', text, flags=re.I|re.S)
             if m:
                 self.add_links(all_links, m.group(1))
 
-            # ---- Transclusions ----
+            # ---- Transclusions ---- TODO
             # Template: eg. {{Software engineering}}, {{Software engineering|state=off}}
             # Article: eg. {{:Software engineering}}
-            #m = re.search(r'.*\{\{\s*([^|]+?).*?\}\}.*', text, flags=re.S)
+            #m = re.search(r'\{\{\s*([^|]+?).*?\}\}', text, flags=re.S)
             #if m:
             #    self.add_links(all_links, m.group(1))
 
+            # ---- Categories ---- TODO
+
         else:
             self.add_links(all_links, text)
-
-        all_links = {lnk.strip() for lnk in all_links}
 
         return all_links
 
