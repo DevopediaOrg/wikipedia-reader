@@ -5,7 +5,7 @@ import utils
 from api_connector import ApiConnector
 from article_reader import HtmlReader, WikitextReader
 from batch_processor import BatchProcessor
-from data_saver import ArticleSaver, TitleSaver
+from data_saver import ArticleSaver, TitleSaver, TextSaver
 from article_filter import ArticleFilter
 
 
@@ -13,6 +13,15 @@ args = utils.parse_args()
 cfg = utils.read_config('config.json')
 utils.add_path(args['dir'], cfg['files'])
 afilter = ArticleFilter(**cfg['filter'])
+
+
+# Read current level: relevant only when not seeding
+try:
+    curr_level = int(TextSaver.read_file(cfg['files']['curr_level']))
+except FileNotFoundError:
+    curr_level = 1
+if curr_level > args['levels']:
+    sys.exit("ERR: Already crawled all permitted levels. Quitting...")
 
 
 # Get lists stored in files from previous crawls
@@ -47,7 +56,8 @@ if len(curr_titles) == 0:
 
 # Process a batch, use links from the batch in a future batch, ...
 all_content = []
-while len(curr_titles) > 0 and len(all_content) < args['maxpages']:
+while curr_level <= args['levels'] and len(curr_titles) > 0 and len(all_content) < args['maxpages']:
+    if not args['seed']: print("Level {} >>>".format(curr_level))
     print("Processing batch of {} {} titles...".format(len(curr_titles), context))
 
     if cfg['reader']['format'] == 'html':
@@ -68,13 +78,13 @@ while len(curr_titles) > 0 and len(all_content) < args['maxpages']:
         if currid not in all_ids:
             uniq_contents.append(content)
             all_ids.add(currid)
-    all_content.extend(uniq_contents)
 
     next_titles -= all_discards
     next_titles -= all_redirects
-    contents, redirects_src, redirects_dst = afilter.find_redirects(contents)
+    uniq_contents, redirects_src, redirects_dst = afilter.find_redirects(uniq_contents)
     all_redirects |= redirects_src # no need to crawl
     next_titles |= redirects_dst # add for a future batch
+    all_content.extend(uniq_contents)
 
     # All seed articles must be crawled: discard none
     next_titles, discarded_titles = afilter.filter_many(next_titles)
@@ -85,6 +95,7 @@ while len(curr_titles) > 0 and len(all_content) < args['maxpages']:
     if not all_pending:
         # Crawled all_pending fully: switch to all_next_pending
         print("Switching to next level of links...")
+        if not args['seed']: curr_level += 1
         curr_titles = all_next_pending
         all_next_pending = set()
         if args['seed']:
@@ -108,3 +119,5 @@ TitleSaver.write_title_file(cfg['files']['pending'], all_pending)
 TitleSaver.write_title_file(cfg['files']['next_pending'], all_next_pending)
 TitleSaver.write_title_file(cfg['files']['discarded'], all_discards)
 TitleSaver.write_title_file(cfg['files']['redirected'], all_redirects)
+if not args['seed']:
+    TextSaver.write_file(cfg['files']['curr_level'], str(curr_level))

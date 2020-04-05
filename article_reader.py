@@ -106,7 +106,7 @@ class WikitextReader(ArticleReader):
         if self.config['restricted']:
             # ---- See also ----
             # TODO Ignores See also if it's the last section (rare case for relevant articles)
-            m = re.search(r'\n==\s*See also\s*==\s*\n(.*?)\n==', text, flags=re.I|re.S)
+            m = re.search(r'\n==\s*See also\s*==(.*?)\n==', text, flags=re.I|re.S)
             if m:
                 self.add_links(all_links, m.group(1))
 

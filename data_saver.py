@@ -6,6 +6,24 @@ import os.path
 import re
 
 
+class TextSaver:
+    ''' Read and write text to file.
+    '''
+
+    def __init__(self):
+        pass
+
+    @classmethod
+    def read_file(cls, fname):
+        with open(fname, 'r', encoding='utf-8') as infile:
+            return infile.read().strip()
+
+    @classmethod
+    def write_file(cls, fname, text):
+        with open(fname, "w", encoding='utf-8') as outfile:
+            outfile.write(text)
+
+
 class ArticleSaver:
     ''' Read and write content of one or more articles to disk.
     Articles are saved in JSON format.

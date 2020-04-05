@@ -13,17 +13,22 @@ import sys
 def parse_args():
     ''' Parse command line arguments. '''
     now = datetime.now().strftime('%Y%h%d.%H%M%S')
-    maxpages = 100
+    maxpages, rmaxpages = 100, 1000
+    maxlevels, rmaxlevels = 2, 10
 
     parser = argparse.ArgumentParser(description='Download articles from Wikipedia via their API.')
     parser.add_argument('-b','--basepath', required=False, default='output',
         help='Base path to folder where files will be saved. If not specified, \'output/\' folder is used.')
     parser.add_argument('-d','--dir', required=False, default=now,
         help='Directory within the base path to save files. If not specified, create one based on current datetime.')
+    parser.add_argument('-l','--levels', required=False, default=maxlevels, type=int,
+        help='''Number of levels to crawl. Default is {}. Range is 1-{}.
+              Links from articles in level n are crawled in level n+1.
+              Not relevant when seeding.'''.format(maxlevels, rmaxlevels))
     parser.add_argument('-m','--maxpages', required=False, default=maxpages, type=int,
-        help='Maximum number of pages to crawl. Default is {}. Range is 1-1000.'.format(maxpages))
+        help='Maximum number of pages to crawl. Default is {}. Range is 1-{}.'.format(maxpages, rmaxpages))
     parser.add_argument('-r','--restricted', action='store_true', required=False,
-        help='Parse article content in a restricted manner to identify more articles to crawl.')
+        help='Parse article content in a restricted manner when identifying more articles to crawl.')
     parser.add_argument('-s','--seed', action='store_true', required=False,
         help='Crawl seed articles to discover other articles to crawl. The latter are added to pending list.')
 
@@ -34,9 +39,12 @@ def parse_args():
        not os.path.exists(os.path.join(args['basepath'], args['dir'])):
         parser.print_help()
         sys.exit("\nERR: Can't crawl articles. First seed using -s option.")
-    if args['maxpages'] < 1 or args['maxpages'] > 1000:
+    if args['levels'] < 1 or args['levels'] > rmaxlevels:
         parser.print_help()
-        sys.exit("\nERR: Out of range. Range for -m option is 1-1000.")
+        sys.exit("\nERR: Out of range. Range for -l option is 1-{}.".format(rmaxlevels))
+    if args['maxpages'] < 1 or args['maxpages'] > rmaxpages:
+        parser.print_help()
+        sys.exit("\nERR: Out of range. Range for -m option is 1-{}.".format(rmaxpages))
 
     args['dir'] = "{}/{}".format(args['basepath'], args['dir'])
     try: os.makedirs(args['dir'])

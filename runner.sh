@@ -23,4 +23,8 @@ do
     lines=$(wc -l "$PendingFile")
     echo Pending titles $lines...
     $PYPATH main.py -r -b "$basepath" -d $odir -m 100
+    if [ $? -ne 0 ]
+    then
+        exit
+    fi
 done

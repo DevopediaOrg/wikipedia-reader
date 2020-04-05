@@ -8,6 +8,7 @@
     },
     "seed" : "data/seed-basic-tech.txt",
     "files" : {
+        "curr_level": "curr_level.txt",
         "crawled_ids": "crawled_ids.txt",
         "crawled": "crawled_titles.txt",
         "discarded": "discarded_titles.txt",
