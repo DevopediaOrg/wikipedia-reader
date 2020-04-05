@@ -98,7 +98,7 @@ class WikitextReader(ArticleReader):
         for stext in sectexts:
             self.add_links(all_links, stext)
 
-        return all_links
+        return set(all_links)
 
     def get_links(self, text):
         all_links = []
@@ -122,7 +122,7 @@ class WikitextReader(ArticleReader):
         else:
             self.add_links(all_links, text)
 
-        return all_links
+        return set(all_links)
 
 
 class HtmlReader(ArticleReader):

@@ -104,6 +104,8 @@ class ApiConnector:
         del(content['parse']['wikitext'])
         if targets:
             content['parse']['targets'] = targets
+        if 'redirects' in content['parse'] and not content['parse']['redirects']:
+            del(content['parse']['redirects'])
 
         return content['parse']
 
