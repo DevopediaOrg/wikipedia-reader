@@ -1,12 +1,9 @@
 {
-    "reader" : {
-        "format": "wikitext"
+    "api" : {
+        "endpoint" : "en.wikipedia.org",
+        "parse" : "displaytitle|revid|text|wikitext",
+        "func" : "get_parsed_text"
     },
-    "filter" : {
-        "includes" : ["Template"],
-        "common_word_file" : "data/words.txt"
-    },
-    "seed" : "data/seed-basic-tech.txt",
     "files" : {
         "curr_level": "curr_level.txt",
         "crawled_ids": "crawled_ids.txt",
@@ -17,9 +14,13 @@
         "next_pending": "next_pending_titles.txt",
         "article_content_prefix": "ac"
     },
-    "api" : {
-        "endpoint" : "en.wikipedia.org",
-        "parse" : "displaytitle|revid|text|wikitext",
-        "func" : "get_parsed_text"
+    "filter" : {
+        "namespace_includes" : [],
+        "common_word_file" : "data/words.txt"
+    },
+    "seed" : "data/seed-basic-tech.txt",
+    "transcludes" : {
+        "enabled" : false,
+        "add_to_curr_level" : false
     }
 }

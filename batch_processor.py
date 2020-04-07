@@ -37,6 +37,7 @@ class BatchProcessor:
     def read_articles(self, articles):
         all_content = []
         all_links = set()
+        all_transcludes = set()
 
         for article in articles:
             # Empty text: article doesn't exist
@@ -46,10 +47,12 @@ class BatchProcessor:
             if self.config['seed']:
                 all_links |=  self.reader.get_seed_links(article['text'], targets)
             else:
-                all_links |=  self.reader.get_links(article['text'])
+                links, transcludes = self.reader.get_links(article['title'], article['text'], article['html'])
+                all_links |=  links
+                all_transcludes |= transcludes
 
             all_content.append(article)
 
-        return all_content, all_links
+        return all_content, all_links, all_transcludes
 
 

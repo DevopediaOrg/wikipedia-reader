@@ -3,7 +3,7 @@ import os
 import sys
 import utils
 from api_connector import ApiConnector
-from article_reader import HtmlReader, WikitextReader
+from article_reader import ArticleReader
 from batch_processor import BatchProcessor
 from data_saver import ArticleSaver, TitleSaver, TextSaver
 from article_filter import ArticleFilter
@@ -60,16 +60,12 @@ while curr_level <= args['levels'] and len(curr_titles) > 0 and len(all_content)
     if not args['seed']: print("Level {} >>>".format(curr_level))
     print("Processing batch of {} {} titles...".format(len(curr_titles), context))
 
-    if cfg['reader']['format'] == 'html':
-        areader = HtmlReader(**cfg['reader'], restricted=args['restricted'])
-    else:
-        areader = WikitextReader(**cfg['reader'], restricted=args['restricted'])
-
+    areader = ArticleReader(transcludes=cfg['transcludes'], restricted=args['restricted'])
     bproc = BatchProcessor(ApiConnector(**cfg['api']).func, 1, areader, seed=args['seed'])
     articles = bproc.batch_call_api(curr_titles)
 
     print("Reading {} articles...".format(len(articles)))
-    contents, next_titles = bproc.read_articles(articles)
+    contents, next_titles, trans_titles = bproc.read_articles(articles)
 
     # Don't add duplicates
     uniq_contents = []
@@ -78,6 +74,19 @@ while curr_level <= args['levels'] and len(curr_titles) > 0 and len(all_content)
         if currid not in all_ids:
             uniq_contents.append(content)
             all_ids.add(currid)
+
+    if cfg['transcludes']['add_to_curr_level']:
+        # Adding to current level is aggressive
+        # :we also won't know how long the level will run
+        # :prefer to add to next level like See also
+        trans_titles -= all_discards
+        trans_titles -= all_redirects
+        trans_titles, discarded_titles = afilter.filter_many(trans_titles)
+        all_discards |= discarded_titles
+        all_pending |= trans_titles
+    else:
+        next_titles |= trans_titles
+        trans_titles = set()
 
     next_titles -= all_discards
     next_titles -= all_redirects
@@ -98,7 +107,7 @@ while curr_level <= args['levels'] and len(curr_titles) > 0 and len(all_content)
         if not args['seed']: curr_level += 1
         curr_titles = all_next_pending
         all_next_pending = set()
-        if args['seed']:
+        if args['seed'] or curr_level > args['levels']:
             # only one batch when seeding
             # newly discovered links are saved but not crawled when seeding
             all_pending = curr_titles - all_titles
@@ -106,10 +115,14 @@ while curr_level <= args['levels'] and len(curr_titles) > 0 and len(all_content)
         else:
             all_pending = utils.limit_titles(all_titles, curr_titles, tot_num_titles)
         all_next_pending -= all_pending
+    elif trans_titles:
+        # added new transcluded content
+        curr_titles = trans_titles
+        all_pending = utils.limit_titles(all_titles, curr_titles, tot_num_titles)
+        all_next_pending -= all_pending
     else:
         # Nothing more to crawl since reached limit in this batch
         break
-
 
 # Save all data
 ArticleSaver.write_content_file(cfg['files']['article_content_prefix'], all_content)
