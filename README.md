@@ -45,7 +45,13 @@ sh runner.sh week23
 
 Output files are stored within path `output/` by default. However, this can be changed via `-b` option. For example, when running on Google Colab, you can change this to store files on your Google Drive space. Files with prefix `seed` may not be useful. Other files contain the actual content of articles.
 
-If you already have a list of article titles to crawl, skip seeding. Save the article titles into the pending file. Delete crawled/discarded/redirected files. File names are as in `config.json`. Run the command `main.py -r -d {yourdir}`
+If you already have a list of article titles to crawl, skip seeding. Save the article titles into the pending file. Delete crawled/discarded/redirected files. File names are as in `config.json`. Run the command `main.py -r -d {yourdir}`. Here's an example:
+```
+# Crawl a list of titles directly without any seeding
+# Place the titles in file week23/pending_titles.txt, one title per line
+# -l option: stop crawling at a specific level
+main.py -d week23 -l 1
+```
 
 
 # Seeding
