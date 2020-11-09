@@ -14,10 +14,11 @@ if [ $# -eq 2 ]
 then
     odir=$2
     printf "======== No Seeding ========\n"
-    printf "Continuing from previous crawl in %s ...\n" $odir
+    printf "Continuing from previous crawl in %s...\n" $odir
 else
     odir=$(date +%Y%h%d.%H%M%S)
     printf "======== Seeding ========\n"
+    printf "Saving new crawl in %s...\n" $odir
     # Use maximum -m value to exhaust the entire seed file
     $PYPATH main.py -s -b "$basepath" -d $odir -m 1000
 fi
