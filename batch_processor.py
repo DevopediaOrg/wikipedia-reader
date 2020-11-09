@@ -1,4 +1,5 @@
 import copy
+import concurrent.futures
 
 
 class BatchProcessor:
@@ -23,13 +24,19 @@ class BatchProcessor:
         else:
             minis = titles
 
-        for i, mini in enumerate(minis, start=1):
-            print("{}/{}: {}...".format(i, len(minis), mini), flush=True)
-            content = self.api_func(mini)
-            if isinstance(content, list):
-                articles.extend(content)
-            else:
-                articles.append(content)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+            futures = {executor.submit(self.api_func, mini): mini for mini in minis}
+            for i, future in enumerate(concurrent.futures.as_completed(futures), start=1):
+                mini = futures[future]
+                try:
+                    print("{}/{}: {}".format(i, len(minis), mini), flush=True)
+                    content = future.result()
+                    if isinstance(content, list):
+                        articles.extend(content)
+                    else:
+                        articles.append(content)
+                except Exception as exc:
+                    print('%r generated an exception: %s' % (mini, exc))
 
         return articles
 
