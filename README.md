@@ -53,6 +53,8 @@ If you already have a list of article titles to crawl, skip seeding. Save the ar
 main.py -d week23 -l 1
 ```
 
+Notebook `Wikipedia-Reader.ipynb` can be used to execute on Google Colab.
+
 
 # Seeding
 
