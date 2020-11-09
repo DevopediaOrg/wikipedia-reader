@@ -43,21 +43,18 @@ class ArticleSaver:
         return content
 
     @classmethod
-    def write_content_file(cls, fname, content):
+    def write_content_file(cls, prefix, content):
         # Derive the next filename suffix
-        acfiles = glob(fname + '*.json')
+        acfiles = glob(prefix + '*.bz2')
         if acfiles:
-            nextid = 1 + max(int(re.sub(r'.*\.(\d+)\.json$', r'\1', os.path.basename(f))) for f in acfiles)
+            nextid = 1 + max(int(re.sub(r'.*\.(\d+)\.json\.bz2$', r'\1', os.path.basename(f))) for f in acfiles)
         else:
             nextid = 1 # start from 1, not 0
-        fname = "{}.{}.json".format(fname, nextid)
+        fname = "{}.{}.json.bz2".format(prefix, nextid)
 
-        # Save json; read from json and save to bz2
-        with open(fname, 'w+', newline='', encoding='utf-8') as jsonfile, \
-             bz2.open(fname + '.bz2', 'wb') as bzfile:
-            json.dump(content, jsonfile, indent=2)
-            jsonfile.seek(os.SEEK_SET)
-            bzfile.write(jsonfile.read().encode('utf-8'))
+        # Unzip on Linux: bzip2 -dk *.bz2
+        with bz2.open(fname, 'wb') as bzfile:
+            bzfile.write(json.dumps(content, indent=2).encode('utf-8'))
 
 
 class TitleSaver:

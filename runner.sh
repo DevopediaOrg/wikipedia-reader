@@ -3,7 +3,7 @@
 PYPATH=python3
 
 
-if [ $# -eq 1 ]
+if [ $# -eq 1 -o $# -eq 2 ]
 then
     basepath=$1
 else
@@ -32,7 +32,7 @@ do
     printf "======== Iteration %03d ========\n" $iter
     lines=$(wc -l "$PendingFile")
     echo Pending titles $lines...
-    $PYPATH main.py -r -b "$basepath" -d $odir -m 100
+    $PYPATH main.py -r -b "$basepath" -d $odir -m 100 -l 3
     if [ $? -ne 0 ]
     then
         exit
